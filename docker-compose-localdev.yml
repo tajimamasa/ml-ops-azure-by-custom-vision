@@ -1,0 +1,31 @@
+version: "3.7"
+
+networks:
+  dev-network-link:
+
+
+services:
+  azurite:
+    container_name: azurite
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - ./data/azurite:/data
+    networks:
+      - dev-network-link
+  
+  data-aruguments:
+    container_name: data-aruguments
+    image: data-aruguments
+    build:
+      context: ./learning
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - azurite
+    networks:
+      - dev-network-link

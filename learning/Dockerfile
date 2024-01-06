@@ -6,7 +6,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends openss
 COPY sshd_config /etc/ssh/
 
 WORKDIR /app
-COPY api ${WORKDIR}
+COPY . ${WORKDIR}
 RUN go mod download && go mod verify
 RUN go build -v -o /usr/local/bin/app main.go
 
