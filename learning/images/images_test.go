@@ -1,0 +1,60 @@
+package images
+
+import (
+	"os"
+	"testing"
+)
+
+// JPG is supported
+func Test_isInvalidExtensionWithJpeg(t *testing.T) {
+	filename := "test.jpeg"
+	if isInvalidExtension(filename) {
+		t.Errorf("isInvalidExtension(%s) = true, want false", filename)
+	}
+}
+
+// png is supported
+func Test_isInvalidExtensionWithPng(t *testing.T) {
+	filename := "test.png"
+	if isInvalidExtension(filename) {
+		t.Errorf("isInvalidExtension(%s) = true, want false", filename)
+	}
+}
+
+// BMP is supported
+func Test_isInvalidExtensionWithBmp(t *testing.T) {
+	filename := "test.bmp"
+	if isInvalidExtension(filename) {
+		t.Errorf("isInvalidExtension(%s) = true, want false", filename)
+	}
+}
+
+// Intermediate extension is not supported
+func Test_isInvalidExtensionWithIntermediateBmp(t *testing.T) {
+	filename := "test.bmp.hg"
+	if !isInvalidExtension(filename) {
+		t.Errorf("isInvalidExtension(%s) = false, want true", filename)
+	}
+}
+
+// Capital extension is supported
+func Test_isInvalidExtensionWithCapitalExt(t *testing.T) {
+	filename := "test.BMP"
+	if isInvalidExtension(filename) {
+		t.Errorf("isInvalidExtension(%s) = true, want false", filename)
+	}
+}
+
+func Test_decodeBase64ToFile(t *testing.T) {
+	local_name := "test.jpeg"
+	encodedString := "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"
+	err := decodeBase64ToFile(encodedString, local_name)
+	if err != nil {
+		t.Errorf("decodeBase64ToFile(%s, test2.jpeg) = %v, want nil", encodedString, err)
+	}
+
+	if _, err := os.Stat(local_name); err != nil {
+		t.Error(err)
+	}
+	os.Remove(local_name)
+}
