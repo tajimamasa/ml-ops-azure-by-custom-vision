@@ -2,3 +2,11 @@
 .DS_Store
 
 .env
+
+# terraform
+*.tfstate
+*.tfstate.*.backup
+*.tfstate.backup
+*.tfvars
+.terraform
+*.tfstate.lock.info
