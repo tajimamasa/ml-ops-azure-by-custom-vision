@@ -1,0 +1,13 @@
+
+subscription_id = ""
+
+# Terraform で作成したサービスプリンシパルの情報
+tenant_id     = ""
+client_id     = ""
+client_secret = ""
+
+product_name    = ""
+region_location = "japaneast"
+
+sql_admin          = ""
+sql_admin_password = ""
