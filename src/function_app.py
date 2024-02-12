@@ -1,5 +1,6 @@
 import azure.functions as func
 import logging
+from predictor.onnxruntime_predict import predict
 
 app = func.FunctionApp()
 
@@ -16,6 +17,13 @@ def counting_person(myblob: func.InputStream):
     logging.info(f"Name: {myblob.name}")
     if not check_extension(file_name=file_name):
         return
+
+    model_path = "model.onnx"
+    labels = ["Person"]
+    predictions = predict(
+        image_filename=myblob.name, model_path=model_path, labels=labels
+    )
+    logging.info(predictions)
 
 
 def check_extension(file_name: str) -> bool:
