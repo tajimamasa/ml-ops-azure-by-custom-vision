@@ -39,9 +39,13 @@ def counting_person(myblob: func.InputStream):
         connection_string=os.environ["AzureWebJobsContainerString"],
         local_dir=temp_dir,
     )
-    logging.info("Downloaded model file.")
-
     model_path = os.path.join(temp_dir, "model.onnx")
+    if os.path.exists(model_path):
+        logging.info("Downloaded model file.")
+    else:
+        logging.info("Download is failed.")
+        return
+
     labels = ["Person"]
     predictions = predict(
         image_filename=img_file_path, model_path=model_path, labels=labels
