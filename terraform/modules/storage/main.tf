@@ -35,7 +35,7 @@ resource "azurerm_storage_container" "image-data" {
 // 初期のモデル
 resource "azurerm_storage_blob" "model-data" {
   count                  = length(var.model-data)
-  name                   = "ideal/${var.model-data[count.index]}"
+  name                   = var.model-data[count.index]
   storage_account_name   = azurerm_storage_account.storage.name
   storage_container_name = azurerm_storage_container.model-data.name
   type                   = "Block"
