@@ -7,7 +7,6 @@ from azure.core.exceptions import (
 from azure.storage.blob import (
     ContainerClient,
 )
-import datetime
 
 
 def download_blobs(
@@ -15,7 +14,7 @@ def download_blobs(
     blob_name_prefix,
     connection_string,
     local_dir="",
-):
+) -> list[str]:
     """
     コンテナ名から指定したプレフィックスを持つブロブを指定したローカルディレクトリにダウンロードする
 
@@ -24,6 +23,9 @@ def download_blobs(
         blob_name_prefix (str): ブロブ名のプレフィックス
         connection_string (str): 接続文字列
         local_dir (str): ダウンロード先のディレクトリパス
+
+    Returns:
+        list[str]: ダウンロードしたファイルのリスト
     """
     client = ContainerClient.from_connection_string(
         conn_str=connection_string, container_name=container_name
@@ -34,6 +36,7 @@ def download_blobs(
         blob_name_prefix=blob_name_prefix,
     )
 
+    file_list = []
     for blob in blob_list:
         try:
             content = client.download_blob(blob=blob.name).readall()
@@ -52,6 +55,8 @@ def download_blobs(
         with open(file_path, "wb") as f:
             f.write(content)
             f.flush()
+        file_list.append(file_path)
+    return file_list
 
 
 def last_modified(
@@ -134,37 +139,33 @@ def _get_blob_list(client, blob_name_prefix):
     return blob_list
 
 
-def upload_files(
+def upload_file(
     container_name,
-    local_dir,
     connection_string,
-    blob_name_prefix="",
+    blob_name,
+    local_file_name,
 ):
     """
-    コンテナURLに指定したローカルディレクトリのファイルをアップロードする
+    コンテナに指定したローカルディレクトリのファイルをアップロードする
 
     Args:
         container_name (str): コンテナ名
-        local_dir (str): アップロードするファイルのあるディレクトリパス
         connection_string (str): 接続文字列
-        blob_name_prefix (str): ブロブ名のプレフィックス
+        blob_name (str): ブロブ名
+        local_file_name (str): アップロードするファイルパス
     """
     client = ContainerClient.from_connection_string(
         conn_str=connection_string, container_name=container_name
     )
-    for dir, _, files in os.walk(local_dir):
-        for file_name in files:
-            src_path = os.path.join(dir, file_name)
-            dest_path = os.path.join(blob_name_prefix, dir, file_name)
 
-            with open(src_path, "rb") as data:
-                try:
-                    client.upload_blob(
-                        name=dest_path,
-                        data=data,
-                        overwrite=True,
-                    )
-                except HttpResponseError as err:
-                    raise RuntimeError(
-                        message=f"Failed to upload blob. HTTP error occurred. Message: {err.message}",
-                    )
+    with open(local_file_name, "rb") as data:
+        try:
+            client.upload_blob(
+                name=blob_name,
+                data=data,
+                overwrite=True,
+            )
+        except HttpResponseError as err:
+            raise RuntimeError(
+                message=f"Failed to upload blob. HTTP error occurred. Message: {err.message}",
+            )
